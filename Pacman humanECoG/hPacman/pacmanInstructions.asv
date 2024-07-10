@@ -1,0 +1,182 @@
+function pacmanInstructions(visEnviro,pacmanOpts,pacmanTaskSpecs)
+%runs through the instructions for the PacmanTask
+%
+%written by Seth Konig 5/18/2020. Loosely based on bandit version
+
+
+%---First Display---%
+Screen(visEnviro.screen.window,'FillRect',pacmanTaskSpecs.colorOpts.background); %clear screen
+Screen(visEnviro.screen.window,'Flip');
+
+% Code editing GK
+text = strcat('Hello!','\n \n');
+text = strcat(text,'Today you are going to play a game \n');
+% text = strcat(text,'where you (the circle) try to catch prey and avoid predators!'); % GK  
+text = strcat(text,'where you (the circle) try to catch prey!'); % GK
+text = strcat(text,'\n \n');
+text = strcat(text,'Press the space bar to continue.');
+DrawFormattedText(visEnviro.screen.window, text,'center', 'center',pacmanTaskSpecs.colorOpts.white);
+% Code editing GK end
+
+%draw player
+correction = correctPosition4Shape(0,[pacmanTaskSpecs.sizeOpts.playerWidth,pacmanTaskSpecs.sizeOpts.playerHeight]);
+visualize_NPCs(visEnviro.screen.window, [1920/2+correction(1) 700],0, pacmanTaskSpecs.colorOpts.player,...
+    [pacmanTaskSpecs.sizeOpts.playerWidth,pacmanTaskSpecs.sizeOpts.playerHeight]);
+
+Screen('Flip',visEnviro.screen.window);
+
+waitForKeyPress = true;
+while waitForKeyPress
+    [~, ~, keyCode] = KbCheck;
+    if keyCode(pacmanOpts.KB.space)
+        waitForKeyPress = false;
+    end
+    WaitSecs(0.001);%so doesn't loop too fast
+end
+
+
+
+%---Second Display---%
+WaitSecs(0.25);
+
+Screen(visEnviro.screen.window,'FillRect',pacmanTaskSpecs.colorOpts.background); %Clears screen
+Screen(visEnviro.screen.window,'Flip');
+
+text = strcat('The prey look like this: \n');
+text = strcat(text,'\n \n \n \n \n \n \n');
+text = strcat(text,'Press the space bar to continue.');
+DrawFormattedText(visEnviro.screen.window, text,'center', 'center',pacmanTaskSpecs.colorOpts.white);
+
+%draw prey
+startPositionX = 625;
+startPositionY = 1080/2;
+Xspacing = 150;
+for npc = 1:size(pacmanTaskSpecs.colorOpts.prey,1)
+    thisPosition = [startPositionX + (npc-1)*Xspacing, startPositionY];
+    visualize_NPCs(visEnviro.screen.window, thisPosition,1, pacmanTaskSpecs.colorOpts.prey(npc,:),...
+        [pacmanTaskSpecs.sizeOpts.preyWidth,pacmanTaskSpecs.sizeOpts.preyHeight]);
+end
+
+Screen('Flip',visEnviro.screen.window);
+sound(visEnviro.soundParams.rwdSound,visEnviro.soundParams.sf);
+
+waitForKeyPress = true;
+while waitForKeyPress
+    [~, ~, keyCode] = KbCheck;
+    if keyCode(pacmanOpts.KB.space)
+        waitForKeyPress = false;
+    end
+    WaitSecs(0.001); %so doesn't loop too fast
+end
+
+
+
+% Code deletion GK
+% %---Third Display----%
+% WaitSecs(0.25);
+% 
+% Screen(visEnviro.screen.window,'FillRect',pacmanTaskSpecs.colorOpts.background); %Clears screen
+% Screen(visEnviro.screen.window,'Flip');
+% 
+% if size(pacmanTaskSpecs.colorOpts.predator,1) == 1
+%     text = strcat('The predator looks like this: \n');
+% else
+%     text = strcat('Predators look like this: \n');
+% end
+% text = strcat(text,'\n \n \n \n \n \n \n');
+% text = strcat(text,'Press the space bar to continue.');
+% DrawFormattedText(visEnviro.screen.window, text,'center', 'center',pacmanTaskSpecs.colorOpts.white);
+% 
+% %draw predator(s)
+% if size(pacmanTaskSpecs.colorOpts.predator,1) == 1
+%     thisPosition = [1920/2, 1080/2];
+%     visualize_NPCs(visEnviro.screen.window, thisPosition,pacmanTaskSpecs.gameOpts.predatorType, pacmanTaskSpecs.colorOpts.predator(1,:),...
+%         [pacmanTaskSpecs.sizeOpts.predatorWidth,pacmanTaskSpecs.sizeOpts.predatorHeight]);
+% else
+%     startPositionX = 625;
+%     startPositionY = 1080/2;
+%     for npc = 1:size(pacmanTaskSpecs.colorOpts.predator,1)
+%         thisPosition = [startPositionX + (npc-1)*Xspacing, startPositionY];
+%         visualize_NPCs(visEnviro.screen.window, thisPosition,pacmanTaskSpecs.gameOpts.predatorType, pacmanTaskSpecs.colorOpts.predator(npc,:),...
+%             [pacmanTaskSpecs.sizeOpts.predatorWidth,pacmanTaskSpecs.sizeOpts.predatorHeight]);
+%     end
+% end
+% 
+% Screen('Flip',visEnviro.screen.window);
+% sound(visEnviro.soundParams.norwdSound,visEnviro.soundParams.sf);
+% 
+% waitForKeyPress = true;
+% while waitForKeyPress
+%     [~, ~, keyCode] = KbCheck;
+%     if keyCode(pacmanOpts.KB.space)
+%         waitForKeyPress = false;
+%     end
+%     WaitSecs(0.001); %so doesn't loop too fast
+% end
+% Code deletion GK end
+
+
+%---Third Display----%
+% Code editing GK
+WaitSecs(0.25);
+
+Screen(visEnviro.screen.window,'FillRect',pacmanTaskSpecs.colorOpts.background); %Clears screen
+
+% text = strcat('Prey and Predator(s) have different values and speeds! \n\n');  GK   
+% text = strcat(text, 'If you catch one of the prey you gain their points,but \n');  GK  
+% text = strcat(text, 'if a predator catches you, you loose their points. \n\n \n \n');  %GK 
+text = strcat('Prey have different values and speeds based on their colour! \n\n');
+text = strcat(text, 'If you catch one of the prey you gain their points,but \n');
+
+if pacmanTaskSpecs.gameOpts.timeOutCost == 0
+    text = strcat([text, 'The trial will end if you fail to catch a prey in ' ...
+        num2str(pacmanOpts.timingParams.timeout) ' seconds. \n']);
+else
+    text = strcat([text, 'The trial will also end if you fail to catch a prey in ' ...
+        num2str(pacmanOpts.timingParams.timeout) ' seconds, and you will loose ' ...
+        num2str(-pacmanTaskSpecs.gameOpts.timeOutCost) ' points!\n']); 
+end
+text = strcat(text,'\n \n \n \n \n');
+text = strcat(text,'Press the space bar to continue.');
+DrawFormattedText(visEnviro.screen.window, text,'center', 'center',pacmanTaskSpecs.colorOpts.white);
+Screen(visEnviro.screen.window,'Flip');
+
+waitForKeyPress = true;
+while waitForKeyPress
+    [~, ~, keyCode] = KbCheck;
+    if keyCode(pacmanOpts.KB.space)
+        waitForKeyPress = false;
+    end
+    WaitSecs(0.001); %so doesn't loop too fast
+end
+
+
+
+%---Fourth Display---%
+WaitSecs(0.25);
+
+Screen(visEnviro.screen.window,'FillRect',pacmanTaskSpecs.colorOpts.background); %Clears screen
+Screen(visEnviro.screen.window,'Flip');
+
+text = strcat('Any questions for us?\n');
+text = strcat(text,'\n \n');
+
+text = strcat(text,'\n \n');
+text = strcat(text,'When you are ready to play, \n');
+text = strcat(text,'press the space bar.');
+
+DrawFormattedText(visEnviro.screen.window, text,'center', 'center', pacmanTaskSpecs.colorOpts.white);
+Screen(visEnviro.screen.window,'Flip');
+
+waitForKeyPress = true;
+while waitForKeyPress
+    [~, ~, keyCode] = KbCheck;
+    if keyCode(pacmanOpts.KB.space)
+        waitForKeyPress = false;
+    end
+    WaitSecs(0.001); %so doesn't loop too fast
+end
+
+
+
+end

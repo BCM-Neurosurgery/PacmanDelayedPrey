@@ -1,0 +1,124 @@
+function hPacman(subjID, rewardStructType, nTrials, showInstructions, emuNum)
+% hPacman.m
+% The human version of the pacaman task.
+% Updated and streamlined by Seth Konig 6/17/2020
+%
+% Input:
+%   1) subjID: name of files to be saved as data output
+%   2) rewardStructType: reward structure type: originalRandom & newBalanced (250 trials)
+%   3) nTrials: number of trials, should be a multiple of 100
+%   4) showInstructions: true/false flag to show instructions
+
+%add all folders and subfolders to path
+mainFolderName = 'Pacman humanECoG';
+thisFunctionPath = mfilename('fullpath');
+mainFolderStart = strfind(thisFunctionPath,mainFolderName);
+addpath(genpath(thisFunctionPath(1:mainFolderStart+length(mainFolderName))));
+
+cd(dir(matlab.desktop.editor.getActiveFilename).folder);
+% addpath(genpath('..'));
+%parse inputs
+if nargin < 1
+    error('Patient not listed. Please at least include the patient number e.g. P999')
+end
+if nargin < 2
+    rewardStructType = 'originalRandom';
+end
+if nargin < 3
+    if contains(rewardStructType, '50plusDelay'); nTrials = -1;
+    else; nTrials = 100;
+    end
+end
+if nargin < 4
+    showInstructions = true;
+end
+if nargin < 5
+    emuNum = 0;
+end
+
+
+%---Do Task Setup and Initiate All Variables/Parameters---%
+try %for task setup
+    
+    ListenChar(2);
+    
+    %Setup Task
+    pacmanOpts = hPacman_params(subjID,rewardStructType, nTrials, emuNum);    % Load & store the task parameters
+    [eyeTrackerhHandle,visEnviro,pacmanOpts,ttlStruct] = pacmanOpenTask(pacmanOpts); % general rig stuff, seperate function in case need task specific
+    [pacmanTaskSpecs, pacmanOpts] = pacmanSetupStimuli(pacmanOpts,visEnviro);  % specific task function for reward and Stimuli
+    
+    %hide mouse since this is a joystick task
+    HideCursor();
+
+    % Code insertion GK - Get some data post-setup
+    % Assume default Display Size to be for a 15.5 inch laptio. Adjust speeds for said display size   
+    % pacmanOpts.adjustSpeedByRes = [visEnviro.screen.displayWidth/344, visEnviro.screen.displayHeight/193];
+    pacmanOpts.adjustSpeedByRes = [1,1]; % backup
+    % pacmanOpts.adjustSpeedByRes = [visEnviro.screen.screenWidth/1920, visEnviro.screen.screenHeight/1080]; % deprecated
+    % Code insertion GK - end
+    
+    disp(":");
+catch ME
+    disp('Unable to start task!');
+    sca
+    rethrow(ME)
+    if exist('ttlStruct','var') == 1
+        closeTask(ttlStruct,visEnviro);
+    else
+        closeTask();
+    end
+    rethrow(ME)
+end
+
+%---Run task---%
+
+% start neural recordings with BRK
+
+
+
+% EB inverted the order of start recording and instructions to give enough
+% time to the NSPs to synchronize:
+%if visEnviro.rig.neuralRecording
+%    [onlineNSP,visEnviro.rig.neuralRecording] = StartBlackrockAquisition(pacmanOpts.fileParams.neuralRecFilename); % For starting Neural Recording in Baylor EMU
+%    ttlStruct.neuralRecording = visEnviro.rig.neuralRecording;
+%end
+
+pause(1)
+
+%Show Instructions to remove learning component and any confusion
+
+if showInstructions
+    pacmanInstructions(visEnviro,pacmanOpts,pacmanTaskSpecs);
+end
+
+
+%then run task
+pacmanRunTrial(pacmanOpts,visEnviro,pacmanTaskSpecs,eyeTrackerhHandle,ttlStruct);
+
+%if visEnviro.rig.neuralRecording
+%    StopBlackrockAquisition(pacmanOpts.fileParams.neuralRecFilename,onlineNSP); % For stopping Neural Recording in Baylor EMU
+%end
+
+%---End Task & Clean Up---%
+try
+    thankYouText = 'Thank you!';
+    DrawFormattedText(visEnviro.screen.window,thankYouText,'center', 'center');
+    markEvent('taskStop',NaN,ttlStruct,visEnviro.screen.window,pacmanOpts.eyeParams.eyeTrackerConnected,1);
+    WaitSecs(2);
+    closeTask(ttlStruct,visEnviro);
+    if isfield(visEnviro,'soundParams')
+        if isfield(visEnviro.soundParams,'audioOutHandle')
+            PsychPortAudio('Close',visEnviro.soundParams.audioOutHandle);
+        end
+    end
+catch ME
+    disp('Unable to end task properly...likely from quitting and screen being closed!');
+    disp(ME.message)
+    if exist('ttlStruct','var') == 1
+        closeTask(ttlStruct,visEnviro);
+    else
+        closeTask();
+    end
+end
+
+end

@@ -1,0 +1,75 @@
+% Developed by Georgios Kokalas May 2024
+% Function looks for a spreadsheet called 'NpcHidingWaitTable.xlsx' to insert values  
+% Input: pacmanOpts
+% Output: pacmanOpts
+
+function pacmanOpts = pacmanGetWaitTable(pacmanOpts, Exp_Type)
+    % If this is not the correct experiment type we exit the function
+    if ~contains(Exp_Type, "50plusDelay"); return; end
+    
+    % Check if we have the default filename and the correct contents
+    sheet_file = '50plusDelay.xlsx';
+    if ~exist(sheet_file,'file')
+        try
+            file_indicator = strfind(char(Exp_Type), '-') + 1;
+            sheet_file = Exp_Type(file_indicator:end);
+            opts = detectImportOptions(sheet_file);
+            detectCorrectOpts(opts, sheet_file);
+        catch ME
+            disp(ME);
+            disp('Error occured when opening custom-named file. See error above');
+        end
+    else
+       opts = detectImportOptions(sheet_file);
+       detectCorrectOpts(opts, sheet_file);
+    end
+    
+    % Open the verified contents
+    time_table_specs = readtable(sheet_file);
+    
+    % Check if the table was originally incomplete
+    if any(isnan(table2array(time_table_specs)), "all")
+        error(['NaN values detected in the table.'... 
+                'Please ensure that all columns have the same number of rows ',...
+                'or contact your system administrator.'])
+    end
+    
+    % Generate the npc table
+    total_trials = sum(time_table_specs.nTrials); 
+    vars_num = length(time_table_specs.Properties.VariableNames) - 1;
+    npc_table_original = zeros(vars_num, total_trials);
+  
+    % insert the values in the npc table
+    nto_idx = 1;
+    for tts_nt_idx = 1:length(time_table_specs.nTrials)
+        num_reps = time_table_specs.nTrials(tts_nt_idx);
+        cur_set = table2array(time_table_specs(tts_nt_idx, 1:end-1))';
+        npc_table_original(1:length(cur_set), nto_idx:nto_idx+num_reps-1) = ...
+            repmat(cur_set,1,num_reps);
+        nto_idx = nto_idx+num_reps;
+    end
+    
+    % Randomize the table
+    npc_table_rand = npc_table_original(randperm(length(npc_table_original)));
+    
+    % Split the randomized table into the time index and the prey values
+    npc_servings = npc_table_rand(1:end-1, :);
+    hide_time_table = npc_table_rand(end, :);
+    
+    % Save any values we can into pac
+end
+
+function detectCorrectOpts(Opts,File_Name)
+    % Check if we have the bare minimum to proceed
+    target_1_found = strcmpi(Opts.VariableNames{1}, 'Target_1');
+    target_2_found = strcmpi(Opts.VariableNames{2}, 'Target_2');
+    delay_found    = strcmpi(Opts.VariableNames{end-1}, 'Delay');
+    nTrials_found  = strcmpi(Opts.VariableNames{end}, 'nTrials');
+    
+    % If we do not have the bare minimum, raise an error
+    if ~(target_1_found && target_2_found && delay_found && nTrials_found)
+        error(['Provided file ', char(File_Name), ' is missing some of the required columns. ',...
+                'Ensure that the first row in the file has these file in column order: ',...
+                'Target_1, Target_2, [Optional - Any Other Targets], Delay, nTrials']);
+    end
+end

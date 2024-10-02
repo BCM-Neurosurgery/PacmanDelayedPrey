@@ -32,7 +32,7 @@ function [pacmanTaskSpecs, pacmanOpts] = pacmanSetupStimuli(pacmanOpts,visEnviro
         %speed and value are correlated 1:1
         gameOpts.preyValue = [ 2, 4, 6, 8, 10 ]*0.5;
         gameOpts.predatorValue	= -[ 2, 4, 6, 8, 10 ]*0.5;
-        gameOpts.preyVelocity = (5:9)*0.5;
+        gameOpts.preyVelocity = (5:9)*0.5*0.9;
         gameOpts.predatorVelocity = gameOpts.preyVelocity*0.35;
         gameOpts.predatorType = -1; %triangle
         gameOpts.timeOutCost = 0;
@@ -328,7 +328,7 @@ function [pacmanTaskSpecs, pacmanOpts] = pacmanSetupStimuli(pacmanOpts,visEnviro
         % Code insertion GK
     elseif contains(pacmanOpts.trialParams.rewardStructType,'50plusDelay')
         % Generate the first 50 trials in random order
-        npc_index_start = kron(1:5, ones(1,10));
+        npc_index_start = kron(1:5, ones(1,2));
         npc_index_start = npc_index_start(randperm(length(npc_index_start)));
         % npc_index_start = npc_index_start(1:20);
         

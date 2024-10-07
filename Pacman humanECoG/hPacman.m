@@ -22,10 +22,10 @@ if nargin < 1
     error('Patient not listed. Please at least include the patient number e.g. P999')
 end
 if nargin < 2
-    rewardStructType = 'originalRandom';
+    rewardStructType = '10plusDelay';
 end
 if nargin < 3
-    if contains(rewardStructType, '50plusDelay'); nTrials = -1;
+    if contains(rewardStructType, '10plusDelay'); nTrials = -1;
     else; nTrials = 100;
     end
 end

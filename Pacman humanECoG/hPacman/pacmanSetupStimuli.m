@@ -28,7 +28,7 @@ function [pacmanTaskSpecs, pacmanOpts] = pacmanSetupStimuli(pacmanOpts,visEnviro
         gameOpts.predatorType = -2; %hexagon
         gameOpts.timeOutCost = gameOpts.predatorValue; %equal to predator value
         % Code insertion GK
-    elseif contains(pacmanOpts.trialParams.rewardStructType,'50plusDelay')
+    elseif contains(pacmanOpts.trialParams.rewardStructType,'10plusDelay')
         %speed and value are correlated 1:1
         gameOpts.preyValue = [ 2, 4, 6, 8, 10 ]*0.5;
         gameOpts.predatorValue	= -[ 2, 4, 6, 8, 10 ]*0.5;
@@ -68,7 +68,7 @@ function [pacmanTaskSpecs, pacmanOpts] = pacmanSetupStimuli(pacmanOpts,visEnviro
         colorOpts.prey		 = [255 111 105; 163 148 255; 196 162 7; 0 187 255; 75 187 78];
         colorOpts.predator	 = [196 162 7];
         % Code insertion GK
-    elseif contains(pacmanOpts.trialParams.rewardStructType,'50plusDelay')
+    elseif contains(pacmanOpts.trialParams.rewardStructType,'10plusDelay')
         colorOpts.player	 = [0.5, 0.5, 0.225]*255;
         colorOpts.predator	 = [ 255, 125, 0;  0, 0, 255; 0, 255, 0; 255, 0, 255; 0, 255, 255 ];
         colorOpts.prey		 = [ 255, 125, 0;  0, 0, 255; 0, 255, 0; 255, 0, 255; 0, 255, 255 ];
@@ -326,7 +326,7 @@ function [pacmanTaskSpecs, pacmanOpts] = pacmanSetupStimuli(pacmanOpts,visEnviro
         taskData.numNPCs = [numNPCs1 numNPCs2];
         taskData.npcIndex = [npcIndex1 npcIndex2];
         % Code insertion GK
-    elseif contains(pacmanOpts.trialParams.rewardStructType,'50plusDelay')
+    elseif contains(pacmanOpts.trialParams.rewardStructType,'10plusDelay')
         % Generate the first 50 trials in random order
         npc_index_start = kron(1:5, ones(1,2));
         npc_index_start = npc_index_start(randperm(length(npc_index_start)));

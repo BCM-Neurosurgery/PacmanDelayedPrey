@@ -5,10 +5,10 @@
 
 function [pacmanOpts, npc_servings, hide_time_table] = pacmanGetWaitTable(pacmanOpts, Exp_Type)
     % If this is not the correct experiment type we exit the function
-    if ~contains(Exp_Type, "50plusDelay"); return; end
+    if ~contains(Exp_Type, "10plusDelay"); return; end
     
     % Check if we have the default filename and the correct contents
-    sheet_file = '50plusDelay.xlsx';
+    sheet_file = '10plusDelay.xlsx';
     if contains(Exp_Type, '-')
         try
             file_indicator = strfind(char(Exp_Type), '-') + 1;

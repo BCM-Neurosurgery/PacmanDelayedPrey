@@ -7,7 +7,7 @@ function pacmanRunTrial(pacmanOpts,visEnviro,pacmanTaskSpecs,eyeTrackerhHandle,t
 %written by Seth Konig 5/14/2020\
 
 % We need this for future checks
-has_delay = contains(pacmanOpts.trialParams.rewardStructType, '50plusDelay'); % GK insertion
+has_delay = contains(pacmanOpts.trialParams.rewardStructType, '10plusDelay'); % GK insertion
 
 %---Set Multi-trial (i.e.session) Variables---%
 sessionVars = [];

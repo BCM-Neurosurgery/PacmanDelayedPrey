@@ -156,7 +156,7 @@ while (sessionVars.trialNum < pacmanOpts.trialParams.ntrials) && ~sessionVars.qu
                 % Code insertion GK - Hide the NPC when needed
                 if has_delay && hideNpc && npc > 1; continue; end
                 % Code insertion GK end
-                visualize_NPCs(visEnviro.screen.window, trialData.startingPositions{npc},1, trialData.npcColors(npc,:), trialData.npcSize(npc,:));
+                visualize_NPCs(visEnviro.screen.window, trialData.startingPositions{npc},1, trialData.npcColors(npc,:), trialData.npcSize(npc,:), trialData.npcValue(npc));
             elseif trialData.npcType(npc) == -1 %predator
                 visualize_NPCs(visEnviro.screen.window, trialData.startingPositions{npc},pacmanTaskSpecs.gameOpts.predatorType, trialData.npcColors(npc,:), trialData.npcSize(npc,:));
             end
@@ -212,7 +212,7 @@ while (sessionVars.trialNum < pacmanOpts.trialParams.ntrials) && ~sessionVars.qu
                         % Code insertion GK - Hide the NPC when needed
                         if has_delay && hideNpc && npc > 1; continue; end
                         % Code insertion GK end
-                        visualize_NPCs(visEnviro.screen.window, trialData.startingPositions{npc},1, trialData.npcColors(npc,:), trialData.npcSize(npc,:));
+                        visualize_NPCs(visEnviro.screen.window, trialData.startingPositions{npc},1, trialData.npcColors(npc,:), trialData.npcSize(npc,:), trialData.npcValue(npc));
                     elseif trialData.npcType(npc) == -1 %predator
                         visualize_NPCs(visEnviro.screen.window, trialData.startingPositions{npc},pacmanTaskSpecs.gameOpts.predatorType, trialData.npcColors(npc,:), trialData.npcSize(npc,:));
                     end
@@ -329,7 +329,7 @@ while (sessionVars.trialNum < pacmanOpts.trialParams.ntrials) && ~sessionVars.qu
                     % Code insertion GK - Hide the NPC when needed
                     if has_delay && hideNpc && npc > 1; continue; end
                     % Code insertion GK end
-                    visualize_NPCs(visEnviro.screen.window, [trialData.npcPositionX(npc,dataIndex-1),trialData.npcPositionY(npc,dataIndex-1)],1, trialData.npcColors(npc,:), trialData.npcSize(npc,:));
+                    visualize_NPCs(visEnviro.screen.window, [trialData.npcPositionX(npc,dataIndex-1),trialData.npcPositionY(npc,dataIndex-1)],1, trialData.npcColors(npc,:), trialData.npcSize(npc,:), trialData.npcValue(npc));
                 elseif trialData.npcType(npc) == -1 %predator
                     visualize_NPCs(visEnviro.screen.window, [trialData.npcPositionX(npc,dataIndex-1),trialData.npcPositionY(npc,dataIndex-1)],pacmanTaskSpecs.gameOpts.predatorType, trialData.npcColors(npc,:), trialData.npcSize(npc,:));
                 end
@@ -486,6 +486,41 @@ while (sessionVars.trialNum < pacmanOpts.trialParams.ntrials) && ~sessionVars.qu
         trialData.trialStop =  markEvent('trialEnd',NaN,ttlStruct,visEnviro.screen.window,pacmanOpts.eyeParams.eyeTrackerConnected,0);
         pacmanTaskSpecs = hpacman_closetrial(pacmanOpts,visEnviro,trialData,sessionVars,pacmanTaskSpecs);
         
+        if sessionVars.trialNum > 0 && mod(sessionVars.trialNum, 5) == 0
+            Screen('Flip',visEnviro.screen.window);
+            WaitSecs(0.25);
+
+            Screen(visEnviro.screen.window,'FillRect',pacmanTaskSpecs.colorOpts.background); %Clears screen
+            Screen(visEnviro.screen.window,'Flip');
+
+            text = strcat('The prey look like this: \n');
+            text = strcat(text,'\n \n \n \n \n \n \n');
+            text = strcat(text,'Press the space bar to continue.');
+            DrawFormattedText(visEnviro.screen.window, text,'center', 'center',pacmanTaskSpecs.colorOpts.white);
+
+            %draw prey
+            startPositionX = 625;
+            startPositionY = 1080/2;
+            Xspacing = 150;
+            for npc = 1:size(pacmanTaskSpecs.colorOpts.prey,1)
+                thisPosition = [startPositionX + (npc-1)*Xspacing, startPositionY];
+                visualize_NPCs(visEnviro.screen.window, thisPosition,1, pacmanTaskSpecs.colorOpts.prey(npc,:),...
+                    [pacmanTaskSpecs.sizeOpts.preyWidth,pacmanTaskSpecs.sizeOpts.preyHeight], pacmanTaskSpecs.gameOpts.preyValue(npc));
+            end
+
+            Screen('Flip',visEnviro.screen.window);
+            sound(visEnviro.soundParams.rwdSound,visEnviro.soundParams.sf);
+            
+            WaitSecs(1);
+            % waitForKeyPress = true;
+            % while waitForKeyPress
+            %     [~, ~, keyCode] = KbCheck;
+            %     if keyCode(pacmanOpts.KB.space)
+            %         waitForKeyPress = false;
+            %     end
+            %     WaitSecs(0.001); %so doesn't loop too fast
+            % end
+        end
         
         
     catch ME

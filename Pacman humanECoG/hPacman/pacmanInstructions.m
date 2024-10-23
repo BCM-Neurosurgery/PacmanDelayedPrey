@@ -43,8 +43,9 @@ Screen(visEnviro.screen.window,'FillRect',pacmanTaskSpecs.colorOpts.background);
 Screen(visEnviro.screen.window,'Flip');
 
 text = strcat('The prey look like this: \n');
-text = strcat(text,'\n \n \n \n \n \n \n');
-text = strcat(text,'Press the space bar to continue.');
+text = strcat(text,'\n \n \n \n \n');
+text = strcat(text,'The score value of each prey is represented by its number and color.');
+text = strcat(text,'\n \nPress the space bar to continue.');
 DrawFormattedText(visEnviro.screen.window, text,'center', 'center',pacmanTaskSpecs.colorOpts.white);
 
 %draw prey
@@ -54,7 +55,7 @@ Xspacing = 150;
 for npc = 1:size(pacmanTaskSpecs.colorOpts.prey,1)
     thisPosition = [startPositionX + (npc-1)*Xspacing, startPositionY];
     visualize_NPCs(visEnviro.screen.window, thisPosition,1, pacmanTaskSpecs.colorOpts.prey(npc,:),...
-        [pacmanTaskSpecs.sizeOpts.preyWidth,pacmanTaskSpecs.sizeOpts.preyHeight]);
+        [pacmanTaskSpecs.sizeOpts.preyWidth,pacmanTaskSpecs.sizeOpts.preyHeight], pacmanTaskSpecs.gameOpts.preyValue(npc));
 end
 
 Screen('Flip',visEnviro.screen.window);

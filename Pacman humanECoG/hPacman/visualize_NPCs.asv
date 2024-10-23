@@ -41,12 +41,8 @@ else
     error('object type not recognized')
 end
 
-% Draw the value of the NPC if provided
-if exist("objectValue", "var")
-    Screen('TextSize', screenWindow, 35);
+if exist("objectValue", "var");
     DrawFormattedText2(int2str(objectValue), 'win', screenWindow, 'sx', (zone(3)+zone(1))/2, ...
-        'sy', (zone(4)+zone(2))/2, 'xalign', 'center', 'yalign', 'center', 'baseColor', [255,255,255,255] );
-    Screen('TextSize', screenWindow, 40);
-end
+        'sy', (zone(4)+zone(2))/2, 'xalign', 'center' )
 
 end

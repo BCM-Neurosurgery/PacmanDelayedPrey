@@ -28,7 +28,8 @@ function [pacmanOpts, npc_servings, hide_time_table] = pacmanGetWaitTable(pacman
     time_table_specs = readtable(sheet_file);
     
     % Check if the table was originally incomplete
-    if any(isnan(table2array(time_table_specs)), "all")
+    arr_conv = table2array(time_table_specs);
+    if any(isnan(arr_conv(:,1)), "all") || any(isnan(arr_conv(:,end-1:end)), "all")
         error(['NaN values detected in the table.'... 
                 'Please ensure that all columns have the same number of rows ',...
                 'or contact your system administrator.'])

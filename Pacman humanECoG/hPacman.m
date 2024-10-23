@@ -38,7 +38,7 @@ end
 
 
 %---Do Task Setup and Initiate All Variables/Parameters---%
-try %for task setup
+% try %for task setup
     
     ListenChar(2);
     
@@ -58,17 +58,17 @@ try %for task setup
     % Code insertion GK - end
     
     disp(":");
-catch ME
-    disp('Unable to start task!');
-    sca
-    rethrow(ME)
-    if exist('ttlStruct','var') == 1
-        closeTask(ttlStruct,visEnviro);
-    else
-        closeTask();
-    end
-    rethrow(ME)
-end
+% catch ME
+%     disp('Unable to start task!');
+%     sca
+%     rethrow(ME)
+%     if exist('ttlStruct','var') == 1
+%         closeTask(ttlStruct,visEnviro);
+%     else
+%         closeTask();
+%     end
+%     rethrow(ME)
+% end
 
 %---Run task---%
 

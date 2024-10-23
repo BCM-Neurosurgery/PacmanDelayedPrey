@@ -71,7 +71,7 @@ function [pacmanTaskSpecs, pacmanOpts] = pacmanSetupStimuli(pacmanOpts,visEnviro
     elseif contains(pacmanOpts.trialParams.rewardStructType,'10plusDelay')
         colorOpts.player	 = [0.5, 0.5, 0.225]*255;
         colorOpts.predator	 = [ 255, 125, 0;  0, 0, 255; 0, 255, 0; 255, 0, 255; 0, 255, 255 ];
-        colorOpts.prey		 = [ 255, 125, 0;  0, 0, 255; 0, 255, 0; 255, 0, 255; 0, 255, 255 ];
+        colorOpts.prey		 = [ 0, 0, 255; 0, 195, 195; 0, 255, 0; 255, 205, 0; 255, 0, 0];
         % Code insertion GK end
     else
         error('Reward structure type not recognized')
@@ -328,7 +328,7 @@ function [pacmanTaskSpecs, pacmanOpts] = pacmanSetupStimuli(pacmanOpts,visEnviro
         % Code insertion GK
     elseif contains(pacmanOpts.trialParams.rewardStructType,'10plusDelay')
         % Generate the first 50 trials in random order
-        npc_index_start = kron(1:5, ones(1,2));
+        npc_index_start = kron(1:5, ones(1,3));
         npc_index_start = npc_index_start(randperm(length(npc_index_start)));
         % npc_index_start = npc_index_start(1:20);
         
